@@ -24,6 +24,40 @@
 
 #include "Hacl_Curve25519_64.h"
 
+typedef int8_t   i8;
+typedef uint8_t  u8;
+typedef int16_t  i16;
+typedef uint32_t u32;
+typedef int32_t  i32;
+typedef int64_t  i64;
+typedef uint64_t u64;
+static u32 load32_le_p(u8 *s)
+{
+    return (u32)s[0]
+        | ((u32)s[1] <<  8)
+        | ((u32)s[2] << 16)
+        | ((u32)s[3] << 24);
+}
+
+static u64 load64_le_p(u8 *s)
+{
+    return load32_le_p(s) | ((u64)load32_le_p(s+4) << 32);
+}
+static void store32_le_p(u8 out[4], u32 in)
+{
+    out[0] =  in        & 0xff;
+    out[1] = (in >>  8) & 0xff;
+    out[2] = (in >> 16) & 0xff;
+    out[3] = (in >> 24) & 0xff;
+}
+
+static void store64_le_p(u8 out[8], u64 in)
+{
+    store32_le_p(out    , (u32)in );
+    store32_le_p(out + 4, in >> 32);
+}
+
+
 static inline uint64_t add_scalar0(uint64_t *out, uint64_t *f1, uint64_t f2)
 {
   #if EVERCRYPT_TARGETCONFIG_GCC
@@ -380,7 +414,7 @@ static void encode_point(uint8_t *o, uint64_t *i)
     uint32_t i0;
     for (i0 = (uint32_t)0U; i0 < (uint32_t)4U; i0++)
     {
-      store64_le(o + i0 * (uint32_t)8U, u64s[i0]);
+      store64_le_p(o + i0 * (uint32_t)8U, u64s[i0]);
     }
   }
 }
@@ -398,7 +432,7 @@ void Hacl_Curve25519_64_scalarmult(uint8_t *out, uint8_t *priv, uint8_t *pub)
     {
       uint64_t *os = tmp;
       uint8_t *bj = pub + i * (uint32_t)8U;
-      uint64_t u = load64_le(bj);
+      uint64_t u = load64_le_p(bj);
       uint64_t r = u;
       uint64_t x0 = r;
       os[i] = x0;
