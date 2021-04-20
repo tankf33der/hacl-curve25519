@@ -6,8 +6,9 @@
 (de hacl51 (S P)
    (use R
       (native
-         "libmsotoodeh.so.0"
-         "curve25519_dh_CreateSharedKey"
+         "libhaclx255.so.0"
+         # "Hacl_Curve25519_51_secret_to_public"
+         "Hacl_Curve25519_51_scalarmult"
          NIL
          '(R (32 B . 32))
          (cons NIL (32) P)
@@ -16,14 +17,19 @@
 (zero C)
 (prinl "tests failed:")
 (in "x25519_test.csv"
-   (until (eof)
+   # (until (eof)
       (let
          (SK (prog1 (hex2L (till ",")) (char))
             PK (prog1 (hex2L (till ",")) (char))
             SH (prog (hex2L (line))) ) 
          (inc 'C)
-         (unless (= SH (crypto_scalarmult SK PK)) 
-            (printsp C) ) ) ) )
+         (println (hacl51 SK PK))
+         (println SH)
+         # (unless (= SH (hacl51 SK PK))
+            # (printsp C) )
+      )
+   #)
+)
 (prinl)
 (msg 'all-hacls-ok)
 (bye)
