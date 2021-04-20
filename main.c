@@ -155,9 +155,9 @@ int main(void) {
 	status |= x25519_64_Slow();
 
 	// FULLs
-	//status |= test_x25519_51();	// RFC, slow passed
-	//status |= test_x25519_64();	// RFC, slow passed
-	//status |= test_x25519_64_Slow();	// RFC, slow passed
+	status |= test_x25519_51();	// RFC, slow passed
+	status |= test_x25519_64();	// RFC, slow passed
+	status |= test_x25519_64_Slow();	// RFC, slow passed
 
 	printf("%s\n", status != 0 ? "FAIL" : "OK");	
 	return status;
